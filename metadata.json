@@ -1,0 +1,6 @@
+{
+  "name": "PyNotes",
+  "description": "Printed handwritten-style coding notes for students in India",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,250 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "App user account and role",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["owner", "manager", "editor", "customer"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "created_at"]
+    },
+    "address": {
+      "title": "Address",
+      "description": "Customer delivery address",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "full_name": { "type": "string" },
+        "phone": { "type": "string" },
+        "line1": { "type": "string" },
+        "line2": { "type": "string" },
+        "pincode": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "is_default": { "type": "boolean" }
+      },
+      "required": ["full_name", "phone", "line1", "pincode", "city", "state"]
+    },
+    "subject": {
+      "title": "Subject",
+      "description": "Curriculum topic or category",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "name": { "type": "string" },
+        "menu_label": { "type": "string" },
+        "parent": { "type": "string" },
+        "icon": { "type": "string" },
+        "accent_color": { "type": "string" },
+        "seo_intro": { "type": "string" },
+        "sort_order": { "type": "number" },
+        "is_active": { "type": "boolean" }
+      },
+      "required": ["slug", "name", "sort_order", "is_active"]
+    },
+    "product": {
+      "title": "Product",
+      "description": "Printed book or bundle",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "type": { "type": "string", "enum": ["book", "bundle"] },
+        "subject_slug": { "type": "string" },
+        "sku": { "type": "string" },
+        "title": { "type": "string" },
+        "short_desc": { "type": "string" },
+        "description": { "type": "string" },
+        "mrp_paise": { "type": "number" },
+        "price_paise": { "type": "number" },
+        "stock_qty": { "type": "number" },
+        "low_stock_threshold": { "type": "number" },
+        "weight_g": { "type": "number" },
+        "hsn_code": { "type": "string" },
+        "gst_rate_bp": { "type": "number" },
+        "status": { "type": "string", "enum": ["draft", "active", "archived"] },
+        "sort_order": { "type": "number" }
+      },
+      "required": ["slug", "type", "title", "mrp_paise", "price_paise", "status"]
+    },
+    "coupon": {
+      "title": "Coupon",
+      "description": "Promotional discount code",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "kind": { "type": "string", "enum": ["percent", "flat"] },
+        "value": { "type": "number" },
+        "min_subtotal_paise": { "type": "number" },
+        "max_discount_paise": { "type": "number" },
+        "applies_to": { "type": "string", "enum": ["any", "prepaid", "cod"] },
+        "usage_limit": { "type": "number" },
+        "used_count": { "type": "number" },
+        "is_active": { "type": "boolean" }
+      },
+      "required": ["code", "kind", "value", "min_subtotal_paise", "is_active"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "Customer purchase order",
+      "type": "object",
+      "properties": {
+        "order_no": { "type": "string" },
+        "user_id": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string" },
+        "payment_method": { "type": "string", "enum": ["prepaid", "cod"] },
+        "payment_status": { "type": "string" },
+        "subtotal_paise": { "type": "number" },
+        "total_paise": { "type": "number" },
+        "ship_name": { "type": "string" },
+        "ship_phone": { "type": "string" },
+        "ship_line1": { "type": "string" },
+        "ship_pincode": { "type": "string" },
+        "ship_city": { "type": "string" },
+        "ship_state": { "type": "string" },
+        "placed_at": { "type": "string" }
+      },
+      "required": ["order_no", "email", "phone", "status", "payment_method", "total_paise", "placed_at"]
+    },
+    "stock_ledger": {
+      "title": "StockLedger",
+      "description": "Idempotent book inventory movement entry",
+      "type": "object",
+      "properties": {
+        "order_id": { "type": "string" },
+        "book_id": { "type": "string" },
+        "delta": { "type": "number" },
+        "reason": { "type": "string" },
+        "at": { "type": "string" },
+        "actor": { "type": "string" }
+      },
+      "required": ["book_id", "delta", "reason", "at"]
+    },
+    "review": {
+      "title": "Review",
+      "description": "Verified customer review",
+      "type": "object",
+      "properties": {
+        "product_slug": { "type": "string" },
+        "display_name": { "type": "string" },
+        "rating": { "type": "number" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "created_at": { "type": "string" }
+      },
+      "required": ["product_slug", "display_name", "rating", "status", "created_at"]
+    },
+    "issue_report": {
+      "title": "IssueReport",
+      "description": "Damaged or wrong item claim",
+      "type": "object",
+      "properties": {
+        "order_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "within_window": { "type": "boolean" },
+        "status": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["order_id", "type", "description", "status", "created_at"]
+    },
+    "faq": {
+      "title": "FAQ",
+      "description": "Frequently asked question",
+      "type": "object",
+      "properties": {
+        "group_name": { "type": "string" },
+        "question": { "type": "string" },
+        "answer": { "type": "string" },
+        "sort_order": { "type": "number" },
+        "is_active": { "type": "boolean" }
+      },
+      "required": ["group_name", "question", "answer", "is_active"]
+    },
+    "page": {
+      "title": "Page",
+      "description": "Policy or informational page",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "body_md": { "type": "string" },
+        "is_draft": { "type": "boolean" },
+        "updated_at": { "type": "string" }
+      },
+      "required": ["slug", "title", "body_md", "is_draft"]
+    },
+    "settings": {
+      "title": "SiteSettings",
+      "description": "Store configuration document",
+      "type": "object",
+      "properties": {
+        "prepaid_discount_percent": { "type": "number" },
+        "cod_enabled": { "type": "boolean" },
+        "cod_fee_paise": { "type": "number" },
+        "free_shipping_threshold_paise": { "type": "number" },
+        "hold_minutes": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "user",
+      "description": "User profiles and roles"
+    },
+    "/users/{uid}/addresses/{addressId}": {
+      "schema": "address",
+      "description": "Customer delivery addresses"
+    },
+    "/subjects/{slug}": {
+      "schema": "subject",
+      "description": "Coding note subjects"
+    },
+    "/products/{slug}": {
+      "schema": "product",
+      "description": "Books and combo bundles"
+    },
+    "/coupons/{code}": {
+      "schema": "coupon",
+      "description": "Promotional discount codes"
+    },
+    "/orders/{orderNo}": {
+      "schema": "order",
+      "description": "Customer purchase orders"
+    },
+    "/stock_ledger/{ledgerId}": {
+      "schema": "stock_ledger",
+      "description": "Idempotent book stock movements"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "review",
+      "description": "Customer reviews"
+    },
+    "/issue_reports/{issueId}": {
+      "schema": "issue_report",
+      "description": "Damage and replacement claims"
+    },
+    "/faqs/{faqId}": {
+      "schema": "faq",
+      "description": "Frequently asked questions"
+    },
+    "/pages/{slug}": {
+      "schema": "page",
+      "description": "Policies and about pages"
+    },
+    "/settings/{settingId}": {
+      "schema": "settings",
+      "description": "Site settings"
+    }
+  }
+}
