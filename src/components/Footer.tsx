@@ -51,7 +51,12 @@ export const Footer: React.FC<{ settings?: any }> = ({ settings }) => {
         {/* Main Footer Links */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-b border-white/10">
           <div className="space-y-4">
-            <Logo className="h-8 text-white" inverted={true} customLogoUrl={settings?.logo_url} />
+            <Logo
+              className="h-8 text-white"
+              inverted={true}
+              customLogoUrl={settings?.logo_url}
+              customLogoWhiteUrl={settings?.logo_white_url}
+            />
             <p className="text-xs text-slate-300 leading-relaxed">
               {settings?.footer_about || 'PyNotes makes printed, handwritten coding notes: Python, Java, C and DSA, laid out the way a good student writes them.'}
             </p>

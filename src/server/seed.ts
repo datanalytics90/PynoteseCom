@@ -2,6 +2,9 @@ import { adminDb } from './firebaseAdmin';
 import { Subject, Product, Coupon, FAQItem, PageContent, SiteSettings } from '../types';
 
 export const defaultSettings: SiteSettings = {
+  logo_url: '/logo.svg',
+  logo_white_url: '/logo-white.svg',
+  logo_height: 36,
   announcement_messages: [
     { text: '🚚 Free shipping across India on all prepaid orders', highlight: 'Free shipping' },
     { text: '📚 100% handwritten-style illustrated notes for engineering & coding', highlight: 'Handwritten-style' },

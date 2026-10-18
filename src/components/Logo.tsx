@@ -5,8 +5,9 @@ interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'horizontal' | 'stacked';
-  inverted?: boolean;
+  inverted?: boolean; // When true (e.g. footer on dark bg), logo is 100% pure white
   customLogoUrl?: string;
+  customLogoWhiteUrl?: string;
   heightPx?: number;
 }
 
@@ -16,89 +17,130 @@ export const Logo: React.FC<LogoProps> = ({
   variant = 'horizontal',
   inverted = false,
   customLogoUrl,
+  customLogoWhiteUrl,
   heightPx
 }) => {
-  const [logoSrc, setLogoSrc] = useState<string | null>(customLogoUrl || null);
+  const [headerLogo, setHeaderLogo] = useState<string>(customLogoUrl || '/logo.svg');
+  const [footerLogo, setFooterLogo] = useState<string>(customLogoWhiteUrl || '/logo-white.svg');
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (customLogoUrl) {
-      setLogoSrc(customLogoUrl);
-      return;
+      setHeaderLogo(customLogoUrl);
+    } else {
+      const saved = localStorage.getItem('pynotes_custom_logo');
+      if (saved) setHeaderLogo(saved);
+      else setHeaderLogo('/logo.svg');
     }
-    // Check localStorage for any admin-uploaded custom logo
-    const saved = localStorage.getItem('pynotes_custom_logo');
-    if (saved) {
-      setLogoSrc(saved);
-    }
-  }, [customLogoUrl]);
 
-  // If a custom logo image has been uploaded or configured by admin
-  if (logoSrc) {
+    if (customLogoWhiteUrl) {
+      setFooterLogo(customLogoWhiteUrl);
+    } else {
+      const savedWhite = localStorage.getItem('pynotes_custom_logo_white');
+      if (savedWhite) {
+        setFooterLogo(savedWhite);
+      } else {
+        const saved = localStorage.getItem('pynotes_custom_logo');
+        if (saved && saved !== '/logo.svg') {
+          // If admin uploaded a custom logo, we can use it with brightness-0 invert filter
+          setFooterLogo(saved);
+        } else {
+          setFooterLogo('/logo-white.svg');
+        }
+      }
+    }
+  }, [customLogoUrl, customLogoWhiteUrl]);
+
+  const activeSrc = inverted ? footerLogo : headerLogo;
+  const computedHeight = heightPx 
+    ? `${heightPx}px` 
+    : size === 'sm' ? '28px' : size === 'lg' ? '46px' : '34px';
+
+  // If image fails to load, fallback to clean inline SVG
+  if (imageError) {
+    if (inverted) {
+      // 100% Pure White inline fallback for dark footer
+      return (
+        <Link
+          to="/"
+          aria-label="PyNotes Home"
+          className={`inline-flex items-center gap-2.5 font-nunito tracking-tight text-white transition-opacity hover:opacity-90 active:scale-95 ${
+            variant === 'stacked' ? 'flex-col items-center text-center' : ''
+          } ${className}`}
+        >
+          <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/30 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" stroke="#ffffff" />
+              <path d="m8.5 9-2 3 2 3" stroke="#ffffff" />
+              <path d="m15.5 9 2 3-2 3" stroke="#ffffff" />
+              <line x1="12" y1="7" x2="12" y2="17" stroke="#ffffff" strokeDasharray="2 2" />
+            </svg>
+          </div>
+          <div className="flex flex-col leading-none">
+            <div className="flex items-center text-2xl font-black tracking-tight text-white">
+              PyNotes<span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5 mb-2 inline-block"></span>
+            </div>
+            <span className="text-[8.5px] uppercase tracking-wider font-extrabold text-white/80 -mt-0.5">
+              Handwritten Coding Notes
+            </span>
+          </div>
+        </Link>
+      );
+    }
+
+    // Default inline fallback with brand colors
     return (
       <Link
         to="/"
         aria-label="PyNotes Home"
-        className={`inline-flex items-center gap-2.5 transition-transform active:scale-95 ${className}`}
+        className={`inline-flex items-center gap-2.5 font-nunito tracking-tight transition-transform active:scale-95 ${
+          variant === 'stacked' ? 'flex-col items-center text-center' : ''
+        } ${className}`}
       >
-        <img
-          src={logoSrc}
-          alt="PyNotes Logo"
-          style={{ height: heightPx ? `${heightPx}px` : size === 'sm' ? '28px' : size === 'lg' ? '48px' : '36px' }}
-          className="object-contain max-w-[200px]"
-        />
+        <div className="w-9 h-9 rounded-xl bg-[#092f55] border border-[#13a5bd]/40 flex items-center justify-center shrink-0 shadow-sm">
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" stroke="#ffffff" />
+            <path d="m8.5 9-2 3 2 3" stroke="#13a5bd" />
+            <path d="m15.5 9 2 3-2 3" stroke="#13a5bd" />
+            <line x1="12" y1="7" x2="12" y2="17" stroke="#f3ad19" strokeDasharray="2 2" />
+          </svg>
+        </div>
+        <div className="flex flex-col leading-none">
+          <div className="flex items-center text-2xl font-black tracking-tight">
+            <span className="text-[#092f55]">Py</span>
+            <span className="text-[#13a5bd]">Notes</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#f3ad19] ml-0.5 mb-2 inline-block"></span>
+          </div>
+          <span className="text-[8.5px] uppercase tracking-wider font-extrabold text-[#708596] -mt-0.5">
+            Handwritten Coding Notes
+          </span>
+        </div>
       </Link>
     );
   }
 
-  // Brand PyNotes Logo: Handcrafted calligraphy pen + code flourish + notebook badge
+  // Render the uploaded or static logo file
+  const isWhiteSvg = activeSrc.includes('white');
+  const needsWhiteFilter = inverted && !isWhiteSvg;
+
   return (
     <Link
       to="/"
       aria-label="PyNotes Home"
-      className={`inline-flex items-center gap-2.5 font-nunito tracking-tight transition-transform active:scale-95 ${
-        variant === 'stacked' ? 'flex-col items-center text-center' : ''
-      } ${className}`}
+      className={`inline-flex items-center transition-all hover:opacity-95 active:scale-95 ${className}`}
     >
-      {/* Brand Icon Badge */}
-      <div className="relative flex items-center justify-center shrink-0">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#092f55] via-[#0B3561] to-[#071E38] border border-[#13a5bd]/40 shadow-md flex items-center justify-center relative overflow-hidden group">
-          {/* Subtle notebook ruled lines in background */}
-          <div className="absolute inset-0 opacity-15 flex flex-col justify-evenly pointer-events-none px-1">
-            <div className="h-[1px] bg-white w-full" />
-            <div className="h-[1px] bg-white w-full" />
-            <div className="h-[1px] bg-white w-full" />
-          </div>
-
-          <svg
-            className="w-5 h-5 relative z-10 text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {/* Book / Notebook Base */}
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" stroke="#ffffff" />
-            {/* Code Brackets & Pen Nib */}
-            <path d="m8.5 9-2 3 2 3" stroke="#13a5bd" strokeWidth="2.2" />
-            <path d="m15.5 9 2 3-2 3" stroke="#13a5bd" strokeWidth="2.2" />
-            <path d="M12 7v10" stroke="#f3ad19" strokeWidth="2" strokeDasharray="2 2" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Brand Wordmark */}
-      <div className="flex flex-col leading-none">
-        <div className="flex items-center text-2xl font-black tracking-tight font-nunito">
-          <span className={inverted ? 'text-white' : 'text-[#092f55]'}>Py</span>
-          <span className="text-[#13a5bd]">Notes</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#f3ad19] ml-0.5 mb-2 inline-block"></span>
-        </div>
-        <span className="text-[9px] uppercase tracking-wider font-extrabold text-[#708596] -mt-0.5">
-          Handwritten Coding Notes
-        </span>
-      </div>
+      <img
+        src={activeSrc}
+        alt="PyNotes Logo"
+        onError={() => setImageError(true)}
+        style={{
+          height: computedHeight,
+          filter: needsWhiteFilter ? 'brightness(0) invert(1)' : undefined,
+        }}
+        className={`object-contain max-w-[220px] transition-all select-none ${
+          inverted ? 'brightness-0 invert' : ''
+        }`}
+      />
     </Link>
   );
 };

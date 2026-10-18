@@ -220,6 +220,9 @@ export interface PageContent {
 }
 
 export interface SiteSettings {
+  logo_url?: string;
+  logo_white_url?: string;
+  logo_height?: number;
   announcement_messages: { text: string; highlight?: string }[];
   prepaid_discount_percent: number;
   stack_prepaid_with_coupon: boolean;

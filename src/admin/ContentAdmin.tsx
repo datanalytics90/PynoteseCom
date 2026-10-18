@@ -98,9 +98,26 @@ export const ContentAdmin: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleWhiteLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Logo file size must be under 2MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setSettings((prev: any) => ({ ...prev, logo_white_url: base64 }));
+      localStorage.setItem('pynotes_custom_logo_white', base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleResetLogo = () => {
-    setSettings((prev: any) => ({ ...prev, logo_url: '' }));
+    setSettings((prev: any) => ({ ...prev, logo_url: '/logo.svg', logo_white_url: '/logo-white.svg' }));
     localStorage.removeItem('pynotes_custom_logo');
+    localStorage.removeItem('pynotes_custom_logo_white');
   };
 
   const handleSaveSettings = async (e?: React.FormEvent) => {
@@ -123,6 +140,11 @@ export const ContentAdmin: React.FC = () => {
           localStorage.setItem('pynotes_custom_logo', settings.logo_url);
         } else {
           localStorage.removeItem('pynotes_custom_logo');
+        }
+        if (settings.logo_white_url) {
+          localStorage.setItem('pynotes_custom_logo_white', settings.logo_white_url);
+        } else {
+          localStorage.removeItem('pynotes_custom_logo_white');
         }
         setTimeout(() => setSavedSuccess(false), 3000);
       } else {
@@ -351,27 +373,33 @@ export const ContentAdmin: React.FC = () => {
             {/* Live Previews */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
               <div className="bg-white p-4 rounded-xl border border-[#e7edf2] flex flex-col justify-between shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#708596] mb-2">Sticky Header (Light Background)</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#708596]">Header Logo (Light Background)</span>
+                  <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono font-bold">Standard</span>
+                </div>
                 <div className="h-16 flex items-center px-4 bg-white/95 border border-dashed border-[#d1d5db] rounded-lg">
                   <Logo customLogoUrl={settings.logo_url} heightPx={settings.logo_height || 36} />
                 </div>
               </div>
 
               <div className="bg-[#092f55] p-4 rounded-xl border border-[#0B3561] flex flex-col justify-between text-white shadow-xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-2">Footer (Dark Background)</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">Footer Logo (Dark Background)</span>
+                  <span className="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded font-mono font-bold">100% Full White</span>
+                </div>
                 <div className="h-16 flex items-center px-4 bg-[#071E38] border border-dashed border-slate-700 rounded-lg">
-                  <Logo customLogoUrl={settings.logo_url} heightPx={settings.logo_height || 36} inverted={true} />
+                  <Logo customLogoUrl={settings.logo_url} customLogoWhiteUrl={settings.logo_white_url} heightPx={settings.logo_height || 36} inverted={true} />
                 </div>
               </div>
             </div>
 
             {/* File Upload Button & URL field */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div>
-                <label className="block text-xs font-bold text-[#092f55] mb-1.5">Upload Logo File</label>
+                <label className="block text-xs font-bold text-[#092f55] mb-1.5">Upload Header Logo</label>
                 <label className="cursor-pointer bg-white hover:bg-slate-50 border-2 border-dashed border-[#13a5bd]/40 hover:border-[#13a5bd] rounded-xl px-4 py-3 flex items-center justify-center gap-2.5 text-xs font-bold text-[#092f55] shadow-xs transition-all">
                   <Upload className="w-4 h-4 text-[#13a5bd]" />
-                  <span>Choose PNG / SVG / JPG</span>
+                  <span>Choose Header Logo</span>
                   <input
                     type="file"
                     accept="image/png, image/jpeg, image/svg+xml, image/webp"
@@ -379,14 +407,29 @@ export const ContentAdmin: React.FC = () => {
                     className="hidden"
                   />
                 </label>
-                <p className="text-[10px] text-slate-400 mt-1">Recommended: Transparent background PNG or SVG (under 2MB).</p>
+                <p className="text-[10px] text-slate-400 mt-1">Light background version (PNG or SVG under 2MB).</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#092f55] mb-1.5">Upload Dedicated White Logo</label>
+                <label className="cursor-pointer bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-[#092f55] rounded-xl px-4 py-3 flex items-center justify-center gap-2.5 text-xs font-bold text-[#092f55] shadow-xs transition-all">
+                  <Upload className="w-4 h-4 text-slate-600" />
+                  <span>Choose White Logo</span>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/svg+xml, image/webp"
+                    onChange={handleWhiteLogoUpload}
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-[10px] text-slate-400 mt-1">Optional. If empty, the header logo is auto-inverted to full white.</p>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-[#092f55] mb-1.5">Or Direct Logo Image URL</label>
                 <input
                   type="text"
-                  placeholder="https://example.com/pynotes-logo.png"
+                  placeholder="https://example.com/logo.png"
                   value={settings.logo_url || ''}
                   onChange={e => {
                     const val = e.target.value;

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 54" fill="none" width="240" height="54">
+  <defs>
+    <linearGradient id="pynotes-icon-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#092f55" />
+      <stop offset="50%" stop-color="#0B3561" />
+      <stop offset="100%" stop-color="#071E38" />
+    </linearGradient>
+    <linearGradient id="pynotes-teal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18c2dd" />
+      <stop offset="100%" stop-color="#13a5bd" />
+    </linearGradient>
+    <filter id="pynotes-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#092f55" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Logo Mark / Emblem -->
+  <g transform="translate(2, 4)">
+    <!-- Squircle Container -->
+    <rect width="46" height="46" rx="12" fill="url(#pynotes-icon-bg)" stroke="#13a5bd" stroke-width="1.5" stroke-opacity="0.4" filter="url(#pynotes-shadow)" />
+
+    <!-- Notebook Ruled Lines (Subtle) -->
+    <line x1="8" y1="14" x2="38" y2="14" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.2" />
+    <line x1="8" y1="23" x2="38" y2="23" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.2" />
+    <line x1="8" y1="32" x2="38" y2="32" stroke="#ffffff" stroke-width="0.75" stroke-opacity="0.2" />
+
+    <!-- Book Spine / Silhouette -->
+    <path d="M11 37V12a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v25a1 1 0 0 1-1 1H12a1 1 0 0 1-1-1Z" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round" fill="none" opacity="0.85" />
+
+    <!-- Code Brackets < / > -->
+    <path d="M16 19l-3 4.5 3 4.5" stroke="url(#pynotes-teal-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M30 19l3 4.5-3 4.5" stroke="url(#pynotes-teal-grad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Fountain Pen Nib / Stylus flourish -->
+    <path d="M23 16v12" stroke="#f3ad19" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1 2.5" />
+    <circle cx="23" cy="30" r="1.5" fill="#f3ad19" />
+  </g>
+
+  <!-- Typography / Brand Name -->
+  <g transform="translate(58, 31)">
+    <!-- "Py" in Navy -->
+    <text font-family="'Nunito', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#092f55" letter-spacing="-0.8">Py<tspan fill="#13a5bd">Notes</tspan></text>
+    <!-- Accent Dot -->
+    <circle cx="118" cy="-6" r="3" fill="#f3ad19" />
+  </g>
+
+  <!-- Subtitle: Handwritten Coding Notes -->
+  <g transform="translate(60, 44)">
+    <text font-family="'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="8.5" fill="#708596" letter-spacing="1.2">HANDWRITTEN CODING NOTES</text>
+  </g>
+</svg>

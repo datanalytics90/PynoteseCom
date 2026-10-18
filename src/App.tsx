@@ -34,7 +34,17 @@ import { SystemCheckAdmin } from './admin/SystemCheckAdmin';
 import { AdminSetup } from './admin/AdminSetup';
 
 export default function App() {
-  const [catalog, setCatalog] = useState<any>({ subjects: [], products: [], settings: {}, faqs: [], reviews: [] });
+  const [catalog, setCatalog] = useState<any>({ 
+    subjects: [], 
+    products: [], 
+    settings: {
+      logo_url: '/logo.svg',
+      logo_white_url: '/logo-white.svg',
+      logo_height: 36,
+    }, 
+    faqs: [], 
+    reviews: [] 
+  });
   const [loadingCatalog, setLoadingCatalog] = useState(true);
 
   useEffect(() => {
@@ -45,7 +55,15 @@ export default function App() {
       })
       .then(data => {
         if (data && typeof data === 'object') {
-          setCatalog(data);
+          setCatalog({
+            ...data,
+            settings: {
+              logo_url: '/logo.svg',
+              logo_white_url: '/logo-white.svg',
+              logo_height: 36,
+              ...(data?.settings || {})
+            }
+          });
         }
         setLoadingCatalog(false);
       })
