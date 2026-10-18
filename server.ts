@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = Number(process.env.DEFAULT_APP_PORT || 3000);
+  const PORT = 3000;
 
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(compression());
@@ -20,12 +20,10 @@ async function startServer() {
   // Mount API routes
   app.use('/api', apiRouter);
 
-  // Auto-seed demo data if empty on startup so store is immediately ready
-  try {
-    await seedDemoDataIfEmpty();
-  } catch (err) {
-    console.warn('Initial seed check error:', err);
-  }
+  // Auto-seed demo data in background so server listens immediately without blocking
+  seedDemoDataIfEmpty().catch((err) => {
+    console.warn('Initial background seed check notice:', err?.message || err);
+  });
 
   const isProd = process.env.NODE_ENV === 'production';
   if (!isProd) {
@@ -43,9 +41,12 @@ async function startServer() {
     });
   }
 
-  app.listen(Number(PORT), '0.0.0.0', () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`PyNotes full-stack server running on port ${PORT}`);
   });
 }
 
-startServer();
+startServer().catch((err) => {
+  console.error('Fatal error starting server:', err);
+  process.exit(1);
+});

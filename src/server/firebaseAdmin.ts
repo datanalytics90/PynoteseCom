@@ -3,12 +3,25 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import firebaseConfig from '../../firebase-applet-config.json';
 
-const app = getApps().length === 0
-  ? initializeApp({
-      credential: applicationDefault(),
-      projectId: firebaseConfig.projectId,
-    })
-  : getApps()[0];
+let app: any;
+try {
+  if (getApps().length === 0) {
+    try {
+      app = initializeApp({
+        credential: applicationDefault(),
+        projectId: firebaseConfig.projectId,
+      });
+    } catch {
+      app = initializeApp({
+        projectId: firebaseConfig.projectId,
+      });
+    }
+  } else {
+    app = getApps()[0];
+  }
+} catch (e) {
+  console.warn('Firebase admin app initialization warning:', e);
+}
 
 export const adminDb = firebaseConfig.firestoreDatabaseId
   ? getFirestore(app, firebaseConfig.firestoreDatabaseId)

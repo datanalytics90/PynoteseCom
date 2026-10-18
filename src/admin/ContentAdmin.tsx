@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Logo } from '../components/Logo';
 import {
   Settings, Megaphone, Tag, HelpCircle, Save, Plus, Trash2,
-  CheckCircle2, AlertCircle, ShieldAlert, Check, RefreshCw
+  CheckCircle2, AlertCircle, ShieldAlert, Check, RefreshCw,
+  Upload, Image, RotateCcw
 } from 'lucide-react';
 
 export const ContentAdmin: React.FC = () => {
@@ -80,6 +82,27 @@ export const ContentAdmin: React.FC = () => {
     loadAll();
   }, []);
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Logo file size must be under 2MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setSettings((prev: any) => ({ ...prev, logo_url: base64 }));
+      localStorage.setItem('pynotes_custom_logo', base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleResetLogo = () => {
+    setSettings((prev: any) => ({ ...prev, logo_url: '' }));
+    localStorage.removeItem('pynotes_custom_logo');
+  };
+
   const handleSaveSettings = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
@@ -96,6 +119,11 @@ export const ContentAdmin: React.FC = () => {
       });
       if (res.ok) {
         setSavedSuccess(true);
+        if (settings.logo_url) {
+          localStorage.setItem('pynotes_custom_logo', settings.logo_url);
+        } else {
+          localStorage.removeItem('pynotes_custom_logo');
+        }
         setTimeout(() => setSavedSuccess(false), 3000);
       } else {
         alert('Failed to save settings');
@@ -295,8 +323,98 @@ export const ContentAdmin: React.FC = () => {
 
       {/* Store Settings & Shipping */}
       {activeTab === 'settings' && (
-        <form onSubmit={handleSaveSettings} className="bg-white p-8 rounded-3xl border border-[#e7edf2] shadow-xs space-y-6">
-          <h3 className="font-extrabold text-base text-[#092f55]">Store Details, GSTIN & Support</h3>
+        <form onSubmit={handleSaveSettings} className="bg-white p-8 rounded-3xl border border-[#e7edf2] shadow-xs space-y-8">
+          
+          {/* Logo & Brand Identity Card */}
+          <div className="p-6 bg-gradient-to-r from-[#f6f9fc] via-white to-[#e4f8f9]/50 rounded-2xl border border-[#e7edf2] space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#13a5bd]/10 text-[#13a5bd] flex items-center justify-center">
+                  <Image className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-[#092f55]">Store Logo & Brand Identity</h4>
+                  <p className="text-[11px] text-[#526d81]">Upload your custom PyNotes brand logo image or change the remote logo URL.</p>
+                </div>
+              </div>
+              {settings.logo_url && (
+                <button
+                  type="button"
+                  onClick={handleResetLogo}
+                  className="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> Reset to Default Logo
+                </button>
+              )}
+            </div>
+
+            {/* Live Previews */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              <div className="bg-white p-4 rounded-xl border border-[#e7edf2] flex flex-col justify-between shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#708596] mb-2">Sticky Header (Light Background)</span>
+                <div className="h-16 flex items-center px-4 bg-white/95 border border-dashed border-[#d1d5db] rounded-lg">
+                  <Logo customLogoUrl={settings.logo_url} heightPx={settings.logo_height || 36} />
+                </div>
+              </div>
+
+              <div className="bg-[#092f55] p-4 rounded-xl border border-[#0B3561] flex flex-col justify-between text-white shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-2">Footer (Dark Background)</span>
+                <div className="h-16 flex items-center px-4 bg-[#071E38] border border-dashed border-slate-700 rounded-lg">
+                  <Logo customLogoUrl={settings.logo_url} heightPx={settings.logo_height || 36} inverted={true} />
+                </div>
+              </div>
+            </div>
+
+            {/* File Upload Button & URL field */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="block text-xs font-bold text-[#092f55] mb-1.5">Upload Logo File</label>
+                <label className="cursor-pointer bg-white hover:bg-slate-50 border-2 border-dashed border-[#13a5bd]/40 hover:border-[#13a5bd] rounded-xl px-4 py-3 flex items-center justify-center gap-2.5 text-xs font-bold text-[#092f55] shadow-xs transition-all">
+                  <Upload className="w-4 h-4 text-[#13a5bd]" />
+                  <span>Choose PNG / SVG / JPG</span>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/svg+xml, image/webp"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-[10px] text-slate-400 mt-1">Recommended: Transparent background PNG or SVG (under 2MB).</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#092f55] mb-1.5">Or Direct Logo Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/pynotes-logo.png"
+                  value={settings.logo_url || ''}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setSettings({ ...settings, logo_url: val });
+                    if (val) localStorage.setItem('pynotes_custom_logo', val);
+                  }}
+                  className="w-full px-4 py-2.5 bg-white border border-[#e7edf2] rounded-xl text-xs focus:outline-none focus:border-[#13a5bd]"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">Can be any hosted image link or CDN URL.</p>
+              </div>
+            </div>
+
+            {/* Height Slider */}
+            <div className="pt-2 flex flex-wrap items-center gap-4">
+              <label className="text-xs font-bold text-[#092f55]">Header Display Height: {settings.logo_height || 36}px</label>
+              <input
+                type="range"
+                min="24"
+                max="60"
+                value={settings.logo_height || 36}
+                onChange={e => setSettings({ ...settings, logo_height: Number(e.target.value) })}
+                className="w-48 accent-[#13a5bd] cursor-pointer"
+              />
+              <span className="text-[11px] text-[#708596]">(Adjust how tall the logo appears in the top navigation)</span>
+            </div>
+          </div>
+
+          <h3 className="font-extrabold text-base text-[#092f55] pt-2">Store Details, GSTIN & Support</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>

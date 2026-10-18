@@ -61,7 +61,7 @@ export default function App() {
         <BrowserRouter>
           <div className="min-h-screen flex flex-col bg-[#f6f9fc] text-[#102943]">
             <AnnouncementBar messages={catalog.settings?.announcement_messages} />
-            <Header subjects={catalog.subjects} products={catalog.products} />
+            <Header subjects={catalog.subjects} products={catalog.products} settings={catalog.settings} />
             
             <main className="flex-1">
               <Routes>
